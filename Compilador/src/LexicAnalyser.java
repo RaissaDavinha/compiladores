@@ -216,11 +216,11 @@ public class LexicAnalyser {
 				case "booleano":
 					token.setSimbolo("sbooleano");
 					break;
-
+				//TODO perguntar pq nao esta na lista de tokens
 				case "verdadeiro":
 					token.setSimbolo("sverdadeiro");
 					break;
-
+				//TODO perguntar pq nao esta na lista de tokens
 				case "falso":
 					token.setSimbolo("sfalso");
 					break;
@@ -358,10 +358,10 @@ public class LexicAnalyser {
 							token.setLinha(returnLineOfToken(fileContentIndex - 1, fileContent));
 							token.setColuna(returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
 						} else {
+							// Trata Pontuacao
 							if (controlCharacter == ';' || controlCharacter == ','
 									|| controlCharacter == '(' || controlCharacter == ')'
 									|| controlCharacter == '.') {
-								// Trata Pontuacao
 								if (controlCharacter == ';') {
 									tokenBuilder = ";";
 									token.setLexema(tokenBuilder);

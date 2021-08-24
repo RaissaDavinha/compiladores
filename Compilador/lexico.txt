@@ -1,34 +1,26 @@
-Teste2;
-                                  						 		:=9+999999-*
-                                   if var > program entao se
-                            		       enquanto <> 
-                          		          faca x: booleano;;;;
-		
+programa test;
+var v: inteiro;
+i,max, juro,: inteiro;
 
-
----------------------------------------
-
-                                           programa teste1;
-                                           var x, y: integer;
-
-                                            procedimento p;
-                                               var z: integer;
-                                            inicio
-                                                   z:= x; 
-                                                   x:=x-1;
-                                                   se  z>1 entao p  
-                                                               senao  y:=1;
-                                                   y:=y*z
-                                                fim ;
-                                    inicio
-                                         leia(x);
-                                         p;  
-                                         escreva (y);
-                                         escreva (x)
-                                    fim.  
-
-
-
----------------------------------------
+início
+enquanto v !=-1
+faca
+início
+{leia o valor  inicial}
+leia(v);
+{leia a taxa de juros }
+leia(juro);
+{ Leia o periodo };
+leia(max);
+valor:= 1;
+i:= 1;
+enquanto i <= max          { (1+juro) elevado a n }
+faca início
+valor:= valor*(1+juro);
+i:= i+1
+fim; 
+escreva(valor)
+fim
+fim.
 
              
