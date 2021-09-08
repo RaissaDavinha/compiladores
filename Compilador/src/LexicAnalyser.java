@@ -84,51 +84,14 @@ public class LexicAnalyser {
 					} else {
 						throw new LexicException("Erro Lexico na linha: " + returnLineOfToken(fileContentIndex - 1, fileContent) + ", comentario sem final", 
 								returnLineOfToken(fileContentIndex - 1, fileContent), 
-								returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
+								returnEndColumnOfToken(fileContentIndex - 1, fileContent));
 					}
 
 				}
 				controlCharacter = fileContent.charAt(fileContentIndex);
 				fileContentIndex++;
 			}
-			
-			//eat comment type 2
-			if (controlCharacter == '/') {
-				controlCharacter = fileContent.charAt(fileContentIndex);
-				fileContentIndex++;
-				
-				if(controlCharacter == '*') {
-					controlCharacter = fileContent.charAt(fileContentIndex);
-					fileContentIndex++;
-					
-					while (controlCharacter != '*') {
-						if (fileContentIndex < fileContent.length()) {
-							controlCharacter = fileContent.charAt(fileContentIndex);
-							fileContentIndex++;
-						} else {
-							throw new LexicException("Erro Lexico na linha:" + returnLineOfToken(fileContentIndex - 1, fileContent) + ", comentario sem final", 
-									returnLineOfToken(fileContentIndex - 1, fileContent), 
-									returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
-						}
-					}
-					
-					controlCharacter = fileContent.charAt(fileContentIndex);
-					fileContentIndex++;
-					
-					if(controlCharacter == '/') {
-						controlCharacter = fileContent.charAt(fileContentIndex);
-						fileContentIndex++;
-					} else {
-						throw new LexicException("Erro Lexico na linha:" + returnLineOfToken(fileContentIndex - 1, fileContent) + ", comentario sem final", 
-								returnLineOfToken(fileContentIndex - 1, fileContent), 
-								returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
-					}
-				} else {
-					throw new LexicException("Erro Lexico na linha:" + returnLineOfToken(fileContentIndex - 1, fileContent) + ", comentario sem final", 
-							returnLineOfToken(fileContentIndex - 1, fileContent), 
-							returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
-				}		
-			}	
+		
 		}
 		
 		if (Character.isDigit(controlCharacter)) {
@@ -315,12 +278,12 @@ public class LexicAnalyser {
 											// erro por ter um !
 											throw new LexicException("Erro Lexico na linha:" + returnLineOfToken(fileContentIndex - 1, fileContent) + ", caractere invalido", 
 													returnLineOfToken(fileContentIndex - 1, fileContent), 
-													returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
+													returnEndColumnOfToken(fileContentIndex - 1, fileContent));
 										}
 									} else {
 										throw new LexicException("Erro Lexico na linha:" + returnLineOfToken(fileContentIndex - 1, fileContent) + ", fim de arquivo", 
 												returnLineOfToken(fileContentIndex - 1, fileContent), 
-												returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
+												returnEndColumnOfToken(fileContentIndex - 1, fileContent));
 									}
 								} else {
 									if (controlCharacter == '>') {
@@ -402,9 +365,9 @@ public class LexicAnalyser {
 									token.setColuna(returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
 								}
 							} else {
-								throw new LexicException("Erro Lexico na linha:" + returnLineOfToken(fileContentIndex - 1, fileContent) + ", caractere valido nao encontrado", 
+								throw new LexicException("Erro Lexico na linha: " + returnLineOfToken(fileContentIndex - 1, fileContent) + ", caractere valido nao encontrado", 
 										returnLineOfToken(fileContentIndex - 1, fileContent), 
-										returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
+										returnEndColumnOfToken(fileContentIndex - 1, fileContent));
 							}
 						}
 					}
