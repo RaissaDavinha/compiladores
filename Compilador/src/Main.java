@@ -9,11 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import javax.swing.JFrame;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -23,7 +18,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileSystemView;
@@ -35,11 +29,7 @@ import javax.swing.JScrollPane;
 import java.awt.Font;
 import java.awt.BorderLayout;
 import javax.swing.JTextPane;
-import javax.swing.JProgressBar;
-import javax.swing.JLabel;
 import java.awt.Color;
-import javax.swing.SwingConstants;
-import javax.swing.AbstractListModel;
 import javax.swing.border.LineBorder;
 import javax.swing.ListSelectionModel;
 
@@ -263,8 +253,6 @@ public class Main extends JFrame{
 				} catch (LexicException e) {
 					e.printStackTrace();
 				} catch (SintaticException e) {
-					e.printStackTrace();
-				} catch (SemanticException e) {
 					e.printStackTrace();
 				}
 			} else {

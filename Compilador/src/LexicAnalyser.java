@@ -75,7 +75,7 @@ public class LexicAnalyser {
 					}
 				}
 			}
-			// eat comment type 1
+			// eat comment
 			if (controlCharacter == '{') {
 				while (controlCharacter != '}') {
 					if (fileContentIndex < fileContent.length()) {
