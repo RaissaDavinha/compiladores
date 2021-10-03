@@ -340,14 +340,16 @@ public class SintaticMain {
 		}
 	}
 
-	public static void chamadaProcedimento() throws SintaticException, IOException, LexicException {}
+	public static void chamadaProcedimento() throws SintaticException, IOException, LexicException {
+		
+	}
 	
 	public static void chamadaFuncao() throws SintaticException, IOException, LexicException {
 		token = analisadorLexico.getToken();
 		if (token.simbolo == "sponto_virgula" || token.simbolo == "smult" || token.simbolo == "sdiv" || token.simbolo == "smais" 
 				|| token.simbolo == "smenos" || token.simbolo == "smaior" || token.simbolo == "smaiorig" 
 				|| token.simbolo == "smenor" || token.simbolo == "smenorig" || token.simbolo == "sig" 
-				|| token.simbolo == "sdif" || token.simbolo == "se" || token.simbolo == "sou" || token.simbolo == "sentao" 
+				|| token.simbolo == "sdif" ||  token.simbolo == "sou" || token.simbolo == "sentao" 
 				|| token.simbolo == "sfaca" || token.simbolo == "sfecha_parenteses" || token.simbolo == "sfim") {
 		} else {
 			throw new SintaticException("Erro Sintatico na linha:" + token.linha + ", caracter invalido", token.linha, token.coluna);
