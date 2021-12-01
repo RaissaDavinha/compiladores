@@ -26,7 +26,7 @@ public class Window extends JFrame {
 	private JTable instructionsTable;
 	private JTextField breakField;
 	private JTable breakArea;
-	String path = "C:\\Users\\raiss\\Documents\\VirtualMachine\\object.txt";
+	String path = "C:\\Users\\RodrigoCardoso\\Documents\\GitHub\\compiladores\\VirtualMachine\\object.txt";
 	private JTable stackTable;
 	private InstructionList instructions;
 	private VirtualMachine machine = new VirtualMachine(path);

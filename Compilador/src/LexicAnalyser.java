@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class LexicAnalyser {
+	//Variaveis do analisador lexico	
 	private FileReader fileReader;
 	private BufferedReader reader;
 	private String auxContent;
@@ -12,6 +13,13 @@ public class LexicAnalyser {
 	private char controlCharacter;
 	private String tokenBuilder;
 	
+	/**
+	 * Procedimento que le o arquivo a ser analisado pelo lexico.
+	 * Chamado no sintaticMain() para definir o lexico
+	 * Coloca o conteudo do arquivo na String fileContent, cada linha separada por um /n
+	 * Parametros:
+	 * String file = caminho do arquivo que vai ser analisado 
+	 */
 	public LexicAnalyser(String fileName) throws IOException {
 		fileReader = new FileReader(fileName);
 		reader = new BufferedReader(fileReader);
@@ -32,10 +40,14 @@ public class LexicAnalyser {
 		fileContent = auxContent.replace("\t", "");
 	}
 
+	/**
+	 * Funcao que retorna o proximo token. 
+	 * Usado no sintaticMain() e seus diversos procedimentos seguintes.
+	 */
 	public Token getToken() throws IOException, LexicException {
 		token = new Token();
 
-		// le primeiro caracter
+		// Le primeiro caracter
 		
 		if (fileContentIndex < fileContent.length()) {
 			controlCharacter = fileContent.charAt(fileContentIndex);
@@ -46,7 +58,7 @@ public class LexicAnalyser {
 		fileContentIndex++;
 
 		while (controlCharacter == ' ' || controlCharacter == '\n' || controlCharacter == '{') {
-			// le todos os espacos
+			// Le todos os espacos
 			if (controlCharacter == ' ') {
 				while (controlCharacter == ' ') {
 					if (fileContentIndex < fileContent.length()) {
@@ -75,7 +87,7 @@ public class LexicAnalyser {
 					}
 				}
 			}
-			// eat comment type 1
+			//Eat comment type 1
 			if (controlCharacter == '{') {
 				while (controlCharacter != '}') {
 					if (fileContentIndex < fileContent.length()) {
@@ -94,6 +106,7 @@ public class LexicAnalyser {
 		
 		}
 		
+		//Se o primeiro caracter for um numero
 		if (Character.isDigit(controlCharacter)) {
 			tokenBuilder = "";
 			while (Character.isDigit(controlCharacter)) {
@@ -104,12 +117,13 @@ public class LexicAnalyser {
 				}
 			}
 			fileContentIndex--;
-			token.setSimbolo("snumero");
+			token.setSimbolo("snumero"); //Sempre que comeca com numero o token é um snumero
 			token.setLexema(tokenBuilder);
 			token.setLinha(returnLineOfToken(fileContentIndex - 1, fileContent));
 			token.setColuna(returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
 
 		} else {
+			//Se o primeiro caracter for uma letra
 			if (Character.isLetter(controlCharacter) && controlCharacter != ';'
 					&& controlCharacter != ':') {
 				tokenBuilder = "";
@@ -127,7 +141,10 @@ public class LexicAnalyser {
 				token.setLexema(tokenBuilder);
 				token.setLinha(returnLineOfToken(fileContentIndex - 1, fileContent));
 				token.setColuna(returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
+				
 				switch (tokenBuilder) {
+				
+				//Possiveis palavras reservadas
 				case "programa":
 					token.setSimbolo("sprograma");
 					break;
@@ -211,14 +228,17 @@ public class LexicAnalyser {
 				case "nao":
 					token.setSimbolo("snao");
 					break;
-
+				
+				//Se nao é uma palavra reservada, é um identificador
 				default:
 					token.setSimbolo("sidentificador");
 				}
 			} else {
+				//Se o caracter for :
 				if (controlCharacter == ':') {
 					tokenBuilder = "";
 					if (fileContentIndex < fileContent.length()) {
+						//e se o proximo for =, atribuicao de valor
 						if (fileContent.charAt(fileContentIndex) == '=') {
 							fileContentIndex++;
 							tokenBuilder = ":=";
@@ -227,6 +247,7 @@ public class LexicAnalyser {
 							token.setLinha(returnLineOfToken(fileContentIndex - 1, fileContent));
 							token.setColuna(returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
 						} else {
+							//se nao, : normal
 							tokenBuilder = ":";
 							token.setLexema(tokenBuilder);
 							token.setSimbolo("sdoispontos");
@@ -241,8 +262,8 @@ public class LexicAnalyser {
 						token.setColuna(returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
 					}
 				} else {
+					// Tratar Operador Aritmetico
 					if (controlCharacter == '+' || controlCharacter == '-' || controlCharacter == '*') {
-						// Tratar Operador Aritmetico
 						tokenBuilder = "";
 						if (controlCharacter == '+') {
 							token.setSimbolo("smais");
@@ -260,10 +281,11 @@ public class LexicAnalyser {
 						token.setLinha(returnLineOfToken(fileContentIndex - 1, fileContent));
 						token.setColuna(returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
 					} else {
+						// Trata Operador Relacional
 						if (controlCharacter == '<' || controlCharacter == '>'
 							|| controlCharacter == '=' || controlCharacter == '!') {
-							// Trata Operador Relacional
 							tokenBuilder = "";
+							//Comparador igual
 							if (controlCharacter == '=') {
 								token.setSimbolo("sig");
 							} else {
@@ -275,17 +297,19 @@ public class LexicAnalyser {
 											fileContentIndex++;
 											token.setSimbolo("sdif");
 										} else {
-											// erro por ter um !
+											//Erro por ter um !
 											throw new LexicException("Erro Lexico na linha:" + returnLineOfToken(fileContentIndex - 1, fileContent) + ", caractere invalido", 
 													returnLineOfToken(fileContentIndex - 1, fileContent), 
 													returnEndColumnOfToken(fileContentIndex - 1, fileContent));
 										}
 									} else {
+										//Erro ao chegar no fim do arquivo de forma inesperada
 										throw new LexicException("Erro Lexico na linha:" + returnLineOfToken(fileContentIndex - 1, fileContent) + ", fim de arquivo", 
 												returnLineOfToken(fileContentIndex - 1, fileContent), 
 												returnEndColumnOfToken(fileContentIndex - 1, fileContent));
 									}
 								} else {
+									//Token comparativo maior / maior ou igual
 									if (controlCharacter == '>') {
 										if (fileContentIndex < fileContent.length()) {
 											if (fileContent.charAt(fileContentIndex) == '=') {
@@ -300,6 +324,7 @@ public class LexicAnalyser {
 											token.setSimbolo("smaior");
 										}
 									} else {
+										//Token comparativo menor / menor ou igual
 										if (fileContentIndex < fileContent.length()) {
 											if (fileContent.charAt(fileContentIndex) == '=') {
 												tokenBuilder += Character.toString(controlCharacter);
@@ -321,10 +346,10 @@ public class LexicAnalyser {
 							token.setLinha(returnLineOfToken(fileContentIndex - 1, fileContent));
 							token.setColuna(returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
 						} else {
+							// Trata Pontuacao
 							if (controlCharacter == ';' || controlCharacter == ','
 									|| controlCharacter == '(' || controlCharacter == ')'
 									|| controlCharacter == '.') {
-								// Trata Pontuacao
 								if (controlCharacter == ';') {
 									tokenBuilder = ";";
 									token.setLexema(tokenBuilder);
@@ -365,6 +390,7 @@ public class LexicAnalyser {
 									token.setColuna(returnEndColumnOfToken(fileContentIndex - 1, fileContent) - token.lexema.length());
 								}
 							} else {
+								//Caso nenhum seja verdade, caracter nao é valido
 								throw new LexicException("Erro Lexico na linha: " + returnLineOfToken(fileContentIndex - 1, fileContent) + ", caractere valido nao encontrado", 
 										returnLineOfToken(fileContentIndex - 1, fileContent), 
 										returnEndColumnOfToken(fileContentIndex - 1, fileContent));
@@ -378,9 +404,18 @@ public class LexicAnalyser {
 		return token;
 	}
 
+	/**
+	 * Funcao que retorna a linha que o token encontrado esta.
+	 * Usada na funcao getToken()
+	 * Parametros:
+	 * int fileContentIndex = indice do token, posicao relativa ao primeiro token do codigo
+	 * String fileContent = conteudo do arquivo sendo anlisado
+	 */
 	private int returnLineOfToken(int fileContentIndex, String fileContent) {
 		int lineNumber;
 		int i;
+		
+		//Anda do token 0 ate o token encontrado e ve o numero da linha pelo numero de \n que encontra no caminho.
 		for (lineNumber = 0, i = 0; i < fileContentIndex; i++) {
 			if (fileContent.charAt(i) == '\n') {
 				lineNumber++;
@@ -388,6 +423,14 @@ public class LexicAnalyser {
 		}
 		return lineNumber + 1;
 	}
+	
+	/**
+	 * Funcao que retorna a coluna que o token encontrado esta.
+	 * Usada na funcao getToken()
+	 * Parametros:
+	 * int fileContentIndex = indice do token, posicao relativa ao primeiro token do codigo
+	 * String fileContent = conteudo do arquivo sendo anlisado
+	 */
 	private int returnEndColumnOfToken(int fileContentIndex, String fileContent) {
 		int auxLinha = 0;
 		int i = 0;

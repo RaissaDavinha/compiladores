@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class SintaticMain {
+	//Variaveis do SintaticMain
 	static Token token = new Token();
 	static Token auxToken = new Token();
 	static LexicAnalyser analisadorLexico;
@@ -24,6 +25,16 @@ public class SintaticMain {
 	
 	static boolean procurandoRetorno = false;
 
+	/**
+	 * Procedimento do compilador sintatico. Compila o programa em "file".
+	 * Chamado no ActionListener do Main.BtnCompile
+	 * Usa as funcoes:
+	 * 	SintaticException(), LexicException(), SemanticException
+	 * 	Main.sendToConsole(), LexicAnalyzer(file).getToken(),
+	 * geradorCodigo.geraStart(), analisaBloco(), 
+	 * Parametros:
+	 * String file = caminho do arquivo que vai ser compilado 
+	 */
 	public static void sintaticMain(String file) throws IOException, LexicException, SintaticException, SemanticException {
 
 		try {
@@ -47,23 +58,30 @@ public class SintaticMain {
 			procFunDeclaPath = new ArrayList<String>();
 		
 			posicao = 0;
-			token = analisadorLexico.getToken();
+			token = analisadorLexico.getToken(); //Chama o lexico para pegar o primeiro token
 			nivelList.add(0);
 
+			//Ve se o primeiro token é sprograma
 			if (token.simbolo == "sprograma") {
 				procFunDeclaPath.add("sprograma");
 				token = analisadorLexico.getToken();
+				
+				//Depois de sprograma tem que vir um sidentificador
 				if (token.simbolo == "sidentificador") {
 					// insere_table(token.lexema, "nomedeprograma","","");
 					simbolStack.insereStack(token.lexema, "nomedeprograma",nivelList.get(nivelList.size() - 1), posicao++);
 					token = analisadorLexico.getToken();
+					
+					//Depois de sidentificador tem que vir um sponto_virgula
 					if (token.simbolo == "sponto_virgula") {
 
 						geradorCodigo.geraStart();
 
 						procurandoRetorno = false;
-						// comeca analisa_bloco
+						
+						//Comeca analisa bloco
 						analisaBloco();
+						
 						if (token.simbolo == "sponto") {
 							if (analisadorLexico.getToken().getSimbolo() == "error") {
 								for (int dallocIndex = allocPerFuncProcStack.get(allocPerFuncProcStack.size() - 1); dallocIndex > 0; dallocIndex--) {
@@ -98,7 +116,13 @@ public class SintaticMain {
 			System.out.print(lexicoException.getMessage());
 		}
 	}
-
+	
+	/**
+	 * Analisa blocos de código. Chamado no sintaticMain()
+	 * Usa as funcoes:
+	 * 	analisaEtVariaveis(), analisaSubrotina(), analisaComandos()
+	 * analisadorLexico.getToken()
+	 */
 	public static void analisaBloco() throws IOException, SintaticException, LexicException, SemanticException {
 		token = analisadorLexico.getToken();
 		analisaEtVariaveis();
@@ -118,6 +142,11 @@ public class SintaticMain {
 		}
 	}
 
+	/**
+	 * Analisa comandos no bloco. Chamado no analisaBloco()
+	 * Usa as funcoes:
+	 * 	analisaComandoSimples(), analisadorLexico.getToken()
+	 */
 	public static void analisaComandos() throws IOException, SintaticException, LexicException, SemanticException {
 		if (token.simbolo == "sinicio") {
 			token = analisadorLexico.getToken();
@@ -138,6 +167,12 @@ public class SintaticMain {
 		}
 	}
 
+	/**
+	 * Analisa comandos simples do analisa comandos. Chamado no analisaComandos()
+	 * Usa as funcoes:
+	 * 	analisaComandos(), analisaAtribChProcedimento(), analisaSe(), analisaEnquanto()
+	 *  analisaLeia(), analisaEscreva()
+	 */
 	public static void analisaComandoSimples() throws IOException, SintaticException, LexicException, SemanticException {
 		switch (token.simbolo) {
 
@@ -172,6 +207,15 @@ public class SintaticMain {
 		}
 	}
 
+	/**
+	 * Analisa Atribuicao de variavel e Chamada de procedimento. Gera códigos quando necessario.
+	 * Chamado no analisaComandoSimples()
+	 * Usa as funcoes:
+	 * 	analisadorLexico.getToken(), analisaExpressao()
+	 *  simbolStack.verificaTipoIndentificador(), simbolStack.verificaFuncaoVar()
+	 *  geradorCodigo.validaPostFixInteiro(), validaPostFixBooleano(), geraCodigoDaPosfix(), geraStr(), geraDalloc(), geraReturn()
+	 *  SemanticException() , chamadaProcedimento()
+	 */
 	public static void analisaAtribChProcedimento() throws SintaticException, IOException, LexicException, SemanticException {
 		auxToken = token;
 		token = analisadorLexico.getToken();
@@ -290,6 +334,13 @@ public class SintaticMain {
 		}
 	}
 
+	/**
+	 * Analisa token do tipo "se" e gera codigo de acordo. Chamado no analisaComandoSimples()
+	 * Usa as funcoes:
+	 * 	analisadorLexico.getToken(), analisaExpressao(), analisaComandoSimples()
+	 * 	geradorCodigo.geraPostFix(), geraCodigoDaPosfix(), geraJmpF(), geraJmp(), geraNull(),
+	 *  SemanticException()
+	 */
 	public static void analisaSe() throws SintaticException, IOException, LexicException, SemanticException {
 		infixList = new ArrayList<Token>();
 		token = analisadorLexico.getToken();
@@ -371,6 +422,13 @@ public class SintaticMain {
 		}
 	}
 
+	/**
+	 * Analisa token do tipo "enquanto" e gera codigo de acordo. Chamado no analisaComandoSimples()
+	 * Usa as funcoes:
+	 * 	analisadorLexico.getToken(), analisaExpressao(), analisaComandoSimples()
+	 * 	geradorCodigo.geraPostFix(), geraCodigoDaPosfix(), geraJmpF(), geraJmp(), geraNull(), validaPostFixBooleano()
+	 * SemanticException(),
+	 */
 	public static void analisaEnquanto() throws SintaticException, IOException, LexicException, SemanticException {
 		infixList = new ArrayList<Token>();
 		int auxrot1, auxrot2;
@@ -424,6 +482,11 @@ public class SintaticMain {
 		}
 	}
 
+	/**
+	 * Analisa token do tipo "leia" e gera codigo de acordo. Chamado no analisaComandoSimples()
+	 * Usa as funcoes:
+	 * 	analisadorLexico.getToken(), geraRd(), geraStr(), SintaticException(), SemanticException(),
+	 */
 	public static void analisaLeia() throws SintaticException, SemanticException, IOException, LexicException {
 		token = analisadorLexico.getToken();
 		if (token.simbolo == "sabre_parenteses") {
@@ -450,6 +513,11 @@ public class SintaticMain {
 
 	}
 
+	/**
+	 * Analisa token do tipo "escreva" e gera codigo de acordo. Chamado no analisaComandoSimples()
+	 * Usa as funcoes:
+	 * 	analisadorLexico.getToken(), analisaExpressao(), geraPostFix(), SintaticException(), SemanticException()
+	 */
 	public static void analisaEscreva() throws SintaticException, SemanticException, IOException, LexicException {
 		token = analisadorLexico.getToken();
 		if (token.simbolo == "sabre_parenteses") {
@@ -481,6 +549,13 @@ public class SintaticMain {
 		}
 	}
 
+	/**
+	 * Analisa token do tipo "identificador" dentro de uma expressao. Usado em analisaTermo()
+	 * Usa as funcoes:
+	 *  simbolStack.verificaFuncaoVar(), verificaFuncDeclarada(), verificaTipoIndentificador(), verificaTipoIndentificador(),
+	 *  chamadaFuncao(), analisaExpressao(), analisadorLexico.getToken(), SintaticException(), SemanticException(),
+	 *  analisaFator()
+	 */
 	public static void analisaFator() throws SintaticException, IOException, LexicException, SemanticException {
 		if (token.simbolo == "sidentificador") {
 			if (simbolStack.verificaFuncaoVar(token.getLexema())) {
@@ -544,6 +619,10 @@ public class SintaticMain {
 		}
 	}
 
+	/**
+	 * Identifica se tem um comparador entre uma parte da expressao e outra.
+	 * Chama analisaExpressaoSimples() para analisar as partes da expressao
+	 */
 	public static void analisaExpressao() throws IOException, LexicException, SintaticException, SemanticException {
 		analisaExpressaoSimples();
 		if (token.simbolo == "smaior" || token.simbolo == "smaiorig" || token.simbolo == "sig"
@@ -554,6 +633,10 @@ public class SintaticMain {
 		}
 	}
 
+	/**
+	 * Verifica se a expressao simples está instaciada corretamente. Usa analisaTermo() entre um comparador e outro.
+	 * Usa analisadorLexico.getToken() quando precisa pegar o proximo token.
+	 */
 	public static void analisaExpressaoSimples() throws IOException, LexicException, SintaticException, SemanticException {
 		if (token.simbolo == "smais" || token.simbolo == "smenos") { // caso der erro colocar token.simbolo == "smais" || de volta
 			infixList.add(token);
@@ -567,6 +650,10 @@ public class SintaticMain {
 		}
 	}
 
+	/**
+	 * Verifica se os termos estao corretos. Usa analisaFator().
+	 * Usa analisadorLexico.getToken() quando precisa pegar o proximo token.
+	 */
 	public static void analisaTermo() throws SintaticException, IOException, LexicException, SemanticException {
 		analisaFator();
 		while (token.simbolo == "smult" || token.simbolo == "sdiv" || token.simbolo == "se") {
@@ -575,7 +662,7 @@ public class SintaticMain {
 			analisaFator();
 		}
 	}
-
+	
 	public static void analisaEtVariaveis() throws SintaticException, SemanticException, IOException, LexicException {
 		if (token.simbolo == "svar") {
 			variaveisDeclaradas = 0;
@@ -772,7 +859,13 @@ public class SintaticMain {
 		simbolStack.limpaNivel(nivelList.get(nivelList.size() - 1));
 		nivelList.remove(nivelList.size() - 1);
 	}
-
+	
+	/**
+	 * Gera codigo para chamada de procedimento. Chamado por analisaAtribChProcedimento
+	 * Usa as funcoes:
+	 * 	simbolStack.verificaProcDeclarada(), geradorCodigo.geraCall()
+	 *  SintaticException()
+	 */
 	public static void chamadaProcedimento() throws SintaticException, IOException, LexicException {
 		if (simbolStack.verificaProcDeclarada(auxToken.getLexema())) {
 			geradorCodigo.geraCall(simbolStack.returnPosicao(auxToken.lexema));
